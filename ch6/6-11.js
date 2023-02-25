@@ -1,16 +1,35 @@
+// class Order {}
+
 export function priceOrder(product, quantity, shippingMethod) {
-  const basePrice = product.basePrice * quantity;
-  const discount =
+  const basePrice = calculateBasePrice(product, quantity);
+  const discount = calculateDiscount(quantity, product);
+  const shippingCost = calculateShoppingCost(
+    basePrice,
+    shippingMethod,
+    quantity
+  );
+
+  return basePrice - discount + shippingCost;
+}
+
+function calculateBasePrice(product, quantity) {
+  return product.basePrice * quantity;
+}
+
+function calculateDiscount(quantity, product) {
+  return (
     Math.max(quantity - product.discountThreshold, 0) *
     product.basePrice *
-    product.discountRate;
+    product.discountRate
+  );
+}
+
+function calculateShoppingCost(basePrice, shippingMethod, quantity) {
   const shippingPerCase =
     basePrice > shippingMethod.discountThreshold
       ? shippingMethod.discountedFee
       : shippingMethod.feePerCase;
-  const shippingCost = quantity * shippingPerCase;
-  const price = basePrice - discount + shippingCost;
-  return price;
+  return quantity * shippingPerCase;
 }
 
 // 사용 예:
