@@ -1,4 +1,34 @@
-// class Order {}
+class Order {
+  #product;
+  #quanty;
+  #shippinMethod;
+
+  constructor(product, quantity, shippingMethod) {
+    this.#product = product;
+    this.#quanty = quantity;
+    this.#shippinMethod = shippingMethod;
+  }
+
+  get basePrice() {
+    return calculateBasePrice(this.#product, this.#quanty);
+  }
+
+  get disCount() {
+    return calculateDiscount(this.#quanty, this.#product);
+  }
+
+  get shoppingCost() {
+    return calculateShoppingCost(
+      this.basePrice,
+      this.#shippinMethod,
+      this.#quanty
+    );
+  }
+
+  get price() {
+    return this.basePrice - this.disCount + this.shoppingCost;
+  }
+}
 
 export function priceOrder(product, quantity, shippingMethod) {
   const basePrice = calculateBasePrice(product, quantity);
@@ -47,3 +77,6 @@ const shippingMethod = {
 
 const price = priceOrder(product, 5, shippingMethod);
 console.log(price);
+
+const order = new Order(product, 5, shippingMethod);
+console.log(order.price);
