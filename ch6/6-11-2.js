@@ -3,8 +3,7 @@ import fs from 'fs';
 run(process.argv);
 
 function run(args) {
-  const command = parseCommand(args);
-  return countOrders(command);
+  return countOrders(parseCommand(args));
 }
 
 function parseCommand(args) {
@@ -26,10 +25,8 @@ function parseCommand(args) {
 function countOrders(command) {
   const rawData = fs.readFileSync(command.fileName);
   const orders = JSON.parse(rawData);
-
-  if (command.countReadyOnly) {
-    console.log(orders.filter((order) => order.status === 'ready').length);
-  } else {
-    console.log(orders.length);
-  }
+  const filterdOrders = command.countReadyOnly
+    ? orders.filter((order) => order.status === 'ready')
+    : orders;
+  console.log(filterdOrders.length);
 }
