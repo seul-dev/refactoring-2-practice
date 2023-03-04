@@ -7,7 +7,7 @@ export function ascentVelocity(points, totalMinutes) {
   }
 
   let totalAscent = 0;
-  calculateAscent([{ elevation: 10 }, { elevation: 20 }]);
+  calculateAscent();
 
   return totalAscent / totalMinutes;
 }
