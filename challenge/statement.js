@@ -15,6 +15,24 @@ function renderPlainText(statement) {
   return result;
 }
 
+export function htmlStatement(invoice, plays) {
+  return renderHTML(createStatement(invoice, plays));
+}
+
+function renderHTML(statement) {
+  let result = `<h1>청구 내역 (고객명: ${statement.customer})</h1>\n`;
+  result += '<table>\n';
+  result += '<tr><th>연극</th><th>좌석 수</th><th>금액</th></tr>';
+  for (let performance of statement.performances) {
+    result += `  <tr><td>${performance.play.name}</td><td>${performance.audience}</td>`;
+    result += `<td>${usdFormat(performance.amount)}</td></tr>\n`;
+  }
+  result += '</table>\n';
+  result += `<p>총액: <em>${usdFormat(statement.totalAmounts)}</em></p>\n`;
+  result += `<p>적립 포인트: <em>${statement.totalCredits}</em>점</p>\n`;
+  return result;
+}
+
 function usdFormat(arg) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
