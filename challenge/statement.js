@@ -1,18 +1,43 @@
 export function statement(invoice, plays) {
-  return renderPlainText(invoice, plays);
+  return renderPlainText(createStatement(invoice, plays));
 }
 
-function renderPlainText(invoice, plays) {
-  let result = `청구 내역 (고객명: ${invoice.customer})\n`;
+function renderPlainText(statement) {
+  let result = `청구 내역 (고객명: ${statement.customer})\n`;
 
-  for (let perf of invoice.performances) {
-    result += `  ${playFor(perf).name}: ${usdFormat(amountFor(perf))} (${
-      perf.audience
+  for (let performance of statement.performances) {
+    result += `  ${performance.play.name}: ${usdFormat(performance.amount)} (${
+      performance.audience
     }석)\n`;
   }
-  result += `총액: ${usdFormat(totalAmounts())}\n`;
-  result += `적립 포인트: ${totalCredits()}점\n`;
+  result += `총액: ${usdFormat(statement.totalAmounts)}\n`;
+  result += `적립 포인트: ${statement.totalCredits}점\n`;
   return result;
+}
+
+function usdFormat(arg) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  }).format(arg / 100);
+}
+
+function createStatement(invoice, plays) {
+  const result = {};
+  result.customer = invoice.customer;
+  result.performances = invoice.performances.map(enrichPerformance);
+  result.totalCredits = totalCredits(result);
+  result.totalAmounts = totalAmounts(result);
+  return result;
+
+  function enrichPerformance(performance) {
+    const result = { ...performance };
+    result.play = playFor(performance);
+    result.amount = amountFor(result);
+    result.credits = creditsFor(result);
+    return result;
+  }
 
   function playFor(performance) {
     return plays[performance.playID];
@@ -21,19 +46,19 @@ function renderPlainText(invoice, plays) {
   function creditsFor(performance) {
     let result = 0;
     result += Math.max(performance.audience - 30, 0);
-    if ('comedy' === playFor(performance).type) {
+    if ('comedy' === performance.play.type) {
       result += Math.floor(performance.audience / 5);
     }
     return result;
   }
 
-  function totalCredits() {
-    return invoice.performances.reduce((total, p) => total + creditsFor(p), 0);
+  function totalCredits(data) {
+    return data.performances.reduce((total, p) => total + p.credits, 0);
   }
 
   function amountFor(performance) {
     let result = 0;
-    switch (playFor(performance).type) {
+    switch (performance.play.type) {
       case 'tragedy': // 비극
         result = 40000;
         if (performance.audience > 30) {
@@ -48,22 +73,14 @@ function renderPlainText(invoice, plays) {
         result += 300 * performance.audience;
         break;
       default:
-        throw new Error(`알 수 없는 장르: ${playFor(performance).type}`);
+        throw new Error(`알 수 없는 장르: ${performance.play.type}`);
     }
     return result;
   }
 
-  function totalAmounts() {
-    return invoice.performances.reduce((total, p) => total + amountFor(p), 0);
+  function totalAmounts(data) {
+    return data.performances.reduce((total, p) => total + p.amount, 0);
   }
-}
-
-function usdFormat(arg) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  }).format(arg / 100);
 }
 
 // 사용예:
