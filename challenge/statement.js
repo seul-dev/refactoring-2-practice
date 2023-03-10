@@ -12,7 +12,7 @@ function renderPlainText(statement) {
       performance.audience
     }석)\n`;
   }
-  result += `총액: ${usdFormat(statement.totalAmounts)}\n`;
+  result += `총액: ${usdFormat(statement.totalAmount)}\n`;
   result += `적립 포인트: ${statement.totalCredits}점\n`;
   return result;
 }
@@ -30,7 +30,7 @@ function renderHTML(statement) {
     result += `<td>${usdFormat(performance.amount)}</td></tr>\n`;
   }
   result += '</table>\n';
-  result += `<p>총액: <em>${usdFormat(statement.totalAmounts)}</em></p>\n`;
+  result += `<p>총액: <em>${usdFormat(statement.totalAmount)}</em></p>\n`;
   result += `<p>적립 포인트: <em>${statement.totalCredits}</em>점</p>\n`;
   return result;
 }

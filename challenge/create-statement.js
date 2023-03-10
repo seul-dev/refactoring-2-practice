@@ -3,7 +3,7 @@ export function createStatement(invoice, plays) {
   result.customer = invoice.customer;
   result.performances = invoice.performances.map(enrichPerformance);
   result.totalCredits = totalCredits(result);
-  result.totalAmounts = totalAmounts(result);
+  result.totalAmount = totalAmount(result);
   return result;
 
   function enrichPerformance(performance) {
@@ -53,7 +53,7 @@ export function createStatement(invoice, plays) {
     return result;
   }
 
-  function totalAmounts(data) {
+  function totalAmount(data) {
     return data.performances.reduce((total, p) => total + p.amount, 0);
   }
 }
