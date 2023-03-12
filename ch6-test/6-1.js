@@ -1,36 +1,47 @@
 export function printOwing(invoice, console, clock) {
-  printBanner(console);
-  const customerInvoice = {
-    customer: invoice.customer,
-    amount: calculateOutstanding(invoice.orders),
-    dueDate: recordDueDate(clock),
-  };
-  printDetails(customerInvoice, console);
+  const owing = new Owing(invoice, clock, console);
+  owing.printBanner();
+  owing.printDetails();
 }
 
-function printBanner(console) {
-  console.log('***********************');
-  console.log('**** Customer Owes ****');
-  console.log('***********************');
-}
+class Owing {
+  #invoice;
+  #clock;
+  #console;
+  constructor(invoice, clock, console) {
+    this.#invoice = invoice;
+    this.#clock = clock;
+    this.#console = console;
+  }
 
-function calculateOutstanding(orders) {
-  return orders.reduce((sum, order) => sum + order.amount, 0);
-}
+  get customer() {
+    return this.#invoice.customer;
+  }
 
-function recordDueDate(clock) {
-  const today = clock.today;
-  return new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate() + 30
-  ).toLocaleDateString();
-}
+  get amount() {
+    return this.#invoice.orders.reduce((sum, order) => sum + order.amount, 0);
+  }
 
-function printDetails(customerInvoice, console) {
-  console.log(`name: ${customerInvoice.customer}`);
-  console.log(`amount: ${customerInvoice.amount}`);
-  console.log(`due: ${customerInvoice.dueDate}`);
+  get dueDate() {
+    const today = this.#clock.today;
+    return new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 30
+    ).toLocaleDateString();
+  }
+
+  printBanner() {
+    this.#console.log('***********************');
+    this.#console.log('**** Customer Owes ****');
+    this.#console.log('***********************');
+  }
+
+  printDetails() {
+    this.#console.log(`name: ${this.customer}`);
+    this.#console.log(`amount: ${this.amount}`);
+    this.#console.log(`due: ${this.dueDate}`);
+  }
 }
 
 const invoice = {
